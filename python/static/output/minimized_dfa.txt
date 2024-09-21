@@ -1,0 +1,3 @@
+0- Equivalence: [[q0, q1], [q2]]
+1- Equivalence: [[q0], [q1], [q2]]
+2- Equivalence: [[q0], [q1], [q2]]

@@ -1,0 +1,22 @@
+NFA:
+States: [q0, q1, q2]
+Alphabet: [a, b]
+Initial State: q0
+Accepting States: [q0q2, q2, q0q2]
+Transitions from q0:
+  a -> q0
+  b -> q2
+  b -> q0
+
+-----
+DFA:
+States: [q0, q0q2]
+Alphabet: [a, b]
+Initial State: q0
+Accepting States: [q0q2]
+Transitions from q0:
+  a -> q0
+  b -> q0q2
+Transitions from q0q2:
+  a -> q0
+  b -> q0q2
