@@ -1,5 +1,5 @@
 import base64
-OUTPUT_FOLDER = 'static/output'
+OUTPUT_FOLDER = 'static'
 
 def get_svg_as_base64(image_path):
     with open(image_path, "rb") as image_file:
