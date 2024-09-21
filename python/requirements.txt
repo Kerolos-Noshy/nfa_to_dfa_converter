@@ -1,5 +1,5 @@
 pybase64
-subprocess
+subprocess.run
 pandas
 streamlit
 graphviz
