@@ -69,12 +69,6 @@ def display_graph_info(graph_type, lines):
         st.latex('''E (alphabets) =  \{ ''' + ', '.join(get_alphabets(lines)) + ''' \}''')
         st.latex('''F (accepting \; states) =  \{ ''' + ', '.join(get_accepting_states(lines)) + ''' \}''')
 
-def save_nfa_to_file(states, alphabets, start_state, accept_states, transitions_list):
-    with open(f'{OUTPUT_FOLDER}/nfa.txt', 'w', encoding="utf-8") as f:
-        f.write(f"{','.join(states)}\n{','.join(alphabets)}\n{start_state}\n{','.join(accept_states)}\n")
-        f.write("".join(f"{s1}, {a}, {s2}\n" for s1, a, s2 in transitions_list))
-
-
 # Function to save data to session state
 def save_nfa_to_session(states, alphabets, start_state, accept_states, transitions_list):
     st.session_state.nfa_lines = [
@@ -122,7 +116,6 @@ def main():
     st.divider()
 
     if st.button("Convert to DFA"):
-        save_nfa_to_file(states, alphabets, start_state, accept_states, transitions_list)
         save_nfa_to_session(states, alphabets, start_state, accept_states, transitions_list)
     
         st.session_state.output = get_dfa_output(''.join(st.session_state.nfa_lines))
