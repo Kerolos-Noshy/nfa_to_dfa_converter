@@ -3,7 +3,8 @@ import streamlit as st
 from dfa_text_handler import handle_dfa
 from script import get_dfa_output
 from graph_creator import create_graph
-import utils
+# import utils
+import base64
 from nfa_text_handler import (
     get_transitions,
     get_initial_state,
@@ -11,6 +12,14 @@ from nfa_text_handler import (
     get_alphabets,
     get_states
 )
+
+
+OUTPUT_FOLDER = 'static/output'
+
+def get_svg_as_base64(img_svg):
+    img_svg = img_svg.encode('utf-8') 
+    encoded = base64.b64encode(img_svg).decode('utf-8')
+    return f'<img src="data:image/svg+xml;base64,{encoded}">'
 
 def get_transitions_table(transitions):
     df = pd.DataFrame(transitions).T
@@ -61,12 +70,40 @@ def display_graph_info(graph_type, lines):
         st.latex('''F (accepting \; states) =  \{ ''' + ', '.join(get_accepting_states(lines)) + ''' \}''')
 
 def save_nfa_to_file(states, alphabets, start_state, accept_states, transitions_list):
-    with open(f'{utils.OUTPUT_FOLDER}/nfa.txt', 'w', encoding="utf-8") as f:
+    with open(f'{OUTPUT_FOLDER}/nfa.txt', 'w', encoding="utf-8") as f:
         f.write(f"{','.join(states)}\n{','.join(alphabets)}\n{start_state}\n{','.join(accept_states)}\n")
         f.write("".join(f"{s1}, {a}, {s2}\n" for s1, a, s2 in transitions_list))
 
 
+# Function to save data to session state
+def save_nfa_to_session(states, alphabets, start_state, accept_states, transitions_list):
+    st.session_state.nfa_lines = [
+        f"{','.join(states)}\n",
+        f"{','.join(alphabets)}\n",
+        f"{start_state}\n",
+        f"{','.join(accept_states)}\n"
+    ] + [f"{s1}, {a}, {s2}\n" for s1, a, s2 in transitions_list]
+
+
 def main():
+    if 'nfa_lines' not in st.session_state:
+        st.session_state.nfa_lines = []
+
+    if 'dfa_lines' not in st.session_state:
+        st.session_state.dfa_lines = []
+
+    if 'output' not in st.session_state:
+        st.session_state.output = []
+
+    if 'nfa_graph' not in st.session_state:
+        st.session_state.nfa_graph = ""
+    
+    if 'dfa_graph' not in st.session_state:
+        st.session_state.dfa_graph = ""
+    
+    if 'minimized_dfa' not in st.session_state:
+        st.session_state.minimized_dfa = []
+
     st.set_page_config(page_title="NFA to DFA Converter", layout="wide", initial_sidebar_state="auto")
     st.title("NFA to DFA Converter")
     st.header("Input your NFA details")
@@ -86,11 +123,12 @@ def main():
 
     if st.button("Convert to DFA"):
         save_nfa_to_file(states, alphabets, start_state, accept_states, transitions_list)
-        get_dfa_output()
-        handle_dfa()
-
-        with open(f'{utils.OUTPUT_FOLDER}/nfa.txt', 'r') as f:
-            nfa_lines = f.readlines()
+        save_nfa_to_session(states, alphabets, start_state, accept_states, transitions_list)
+    
+        st.session_state.output = get_dfa_output(''.join(st.session_state.nfa_lines))
+        st.session_state.dfa_lines = handle_dfa(st.session_state.output)
+        
+        nfa_lines = st.session_state.nfa_lines
 
         c1, c2 = st.columns(2)
         with c1:
@@ -99,24 +137,23 @@ def main():
                 display_graph_info('NFA', nfa_lines)
                 st.latex('''\delta (transition \; table) ''')
                 st.table(get_transitions_table(get_transitions(nfa_lines)))
-                create_graph('NFA', get_transitions(nfa_lines), get_initial_state(nfa_lines), get_accepting_states(nfa_lines))
-            st.markdown(utils.get_svg_as_base64(f'{utils.OUTPUT_FOLDER}/NFA_graph.svg'), unsafe_allow_html=True)
+                nfa_svg_content = create_graph('NFA', get_transitions(nfa_lines), get_initial_state(nfa_lines), get_accepting_states(nfa_lines))
+            st.markdown(get_svg_as_base64(nfa_svg_content), unsafe_allow_html=True)
 
         with c2:
             with st.container(border=True):
-                with open(f'{utils.OUTPUT_FOLDER}/dfa_formated.txt', 'r') as f:
-                    dfa_lines = f.readlines()
+                
+                dfa_lines = st.session_state.dfa_lines
                 st.subheader('DFA')
                 display_graph_info('DFA', dfa_lines)
                 st.latex('''\delta (transition \; table) ''')
                 st.table(get_transitions_table(get_transitions(dfa_lines)).replace('?', 'Ø'))
-                create_graph('DFA', get_transitions(dfa_lines), get_initial_state(dfa_lines), get_accepting_states(dfa_lines))
-            st.markdown(utils.get_svg_as_base64(f'{utils.OUTPUT_FOLDER}/DFA_graph.svg'), unsafe_allow_html=True)
+                dfa_svg_content = create_graph('DFA', get_transitions(dfa_lines), get_initial_state(dfa_lines), get_accepting_states(dfa_lines))
+            st.markdown(get_svg_as_base64(dfa_svg_content), unsafe_allow_html=True)
 
         with st.expander(" **Minimize DFA**"):
-            with open(f'{utils.OUTPUT_FOLDER}/minimized_dfa.txt', 'r') as f:
-                minimized_lines = f.readlines()
-            st.markdown('##### ' + '\n ##### '.join(minimized_lines).replace('?', 'Ø'))
+            st.session_state.minimized_dfa = st.session_state.output[st.session_state.output.rfind('-----'):].split('\n')[1:]
+            st.markdown('##### ' + '\n ##### '.join(st.session_state.minimized_dfa).replace('?', 'Ø'))
 
 if __name__ == "__main__":
     main()

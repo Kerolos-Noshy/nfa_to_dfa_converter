@@ -55,5 +55,6 @@ def create_graph(type, transitions, start_state, accept_states):
             for next_state in next_states:
                 dot.edge(state.replace('?', 'Ø'), next_state, label=label)
 
-
+    svg_output = dot.pipe(format='svg').decode('utf-8')
+    return svg_output
     return dot.render(f'{utils.OUTPUT_FOLDER}/{type}_graph', view=False, format='svg', cleanup=True)
