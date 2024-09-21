@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.Arrays;
-import java.util.List;
 
 public class Main {
     public static void print(String s){
@@ -9,7 +8,6 @@ public class Main {
 
 
     public static void main(String[] args) {
-        args[0] = "C:\\Users\\kerol\\Desktop\\nfa to dfa - streamlit\\NFA_TO_DFA_java\\python\\static\\output\\nfa.txt";
         NFA nfa = null;
         String[] splitPath = args[0].split("\\\\");
 
