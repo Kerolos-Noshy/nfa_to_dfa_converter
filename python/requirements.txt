@@ -1,3 +1,4 @@
+pybase64
 subprocess
 pandas
 streamlit
