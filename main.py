@@ -145,8 +145,8 @@ def main():
                 display_graph_info('NFA', nfa)
                 st.latex('''\delta (transition \; table) ''')
                 st.table(create_transition_table(transitions_list))
-                nfa_svg_content = create_graph('NFA', nfa.get_transitions(), nfa.get_initial_state().get_name(), [state.get_name() for state in nfa.get_final_states()])
-            st.markdown(get_svg_as_base64(nfa_svg_content), unsafe_allow_html=True)
+            #     nfa_svg_content = create_graph('NFA', nfa.get_transitions(), nfa.get_initial_state().get_name(), [state.get_name() for state in nfa.get_final_states()])
+            # st.markdown(get_svg_as_base64(nfa_svg_content), unsafe_allow_html=True)
 
         with c2:
             converter = AutomataConverter(nfa, minimized=False)
@@ -159,8 +159,8 @@ def main():
                                 
                 transitions = dfa.get_transitions() 
                 st.table(create_transition_table(transitions))
-                dfa_svg_content = create_graph('DFA', dfa.get_transitions(), dfa.get_initial_state().get_name(), [state.get_name() for state in dfa.get_final_states()])
-            st.markdown(get_svg_as_base64(dfa_svg_content), unsafe_allow_html=True)
+            #     dfa_svg_content = create_graph('DFA', dfa.get_transitions(), dfa.get_initial_state().get_name(), [state.get_name() for state in dfa.get_final_states()])
+            # st.markdown(get_svg_as_base64(dfa_svg_content), unsafe_allow_html=True)
         with st.expander(" **Minimize DFA**"):
             st.markdown('##### ' + '\n ##### '.join(dfa.minimize()).replace('?', 'Ø'))
 
