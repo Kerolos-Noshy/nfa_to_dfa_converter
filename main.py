@@ -27,18 +27,20 @@ def create_transition_table(transitions):
         states.add(from_state)
         states.add(to_state)
         if symbol == 'e':
-            symbols.add('ε')
+            symbols.update('ε')
         else:
-            symbols.add(symbol)
+            symbols.update(symbol)
+
+    symbols = list(symbols)[::-1]
 
     state_list = sorted(map(str, states))
 
-    transition_dict = {state: {symbol: set() for symbol in symbols} for state in state_list}
+    transition_dict = {state: {symbol: list() for symbol in symbols} for state in state_list}
 
     for from_state, symbol, to_state in transitions:
-        transition_dict[str(from_state)][symbol.replace('e', 'ε')].add(str(to_state))
+        transition_dict[str(from_state)][symbol.replace('e', 'ε')].append(str(to_state))
 
-    df = pd.DataFrame(columns=list(symbols))
+    df = pd.DataFrame(columns=symbols)
 
     for state, symbol_dict in transition_dict.items():
         for symbol, to_states in symbol_dict.items():
