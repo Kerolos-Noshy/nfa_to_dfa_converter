@@ -26,14 +26,17 @@ def create_transition_table(transitions):
     for from_state, symbol, to_state in transitions:
         states.add(from_state)
         states.add(to_state)
-        symbols.add(symbol)
+        if symbol == 'e':
+            symbols.add('ε')
+        else:
+            symbols.add(symbol)
 
     state_list = sorted(map(str, states))
 
     transition_dict = {state: {symbol: set() for symbol in symbols} for state in state_list}
 
     for from_state, symbol, to_state in transitions:
-        transition_dict[str(from_state)][symbol].add(str(to_state))
+        transition_dict[str(from_state)][symbol.replace('e', 'ε')].add(str(to_state))
 
     df = pd.DataFrame(columns=list(symbols))
 
@@ -43,7 +46,7 @@ def create_transition_table(transitions):
             df.at[state, symbol] = ', '.join(sorted(to_states)) if to_states else '∅'
     df.reset_index(inplace=True)
     df.rename(columns={'index': 'State'}, inplace=True)
-    return df.replace('?', 'Ø')
+    return df
 
 
 
@@ -86,11 +89,11 @@ def display_graph_info(graph_type, automata):
         if states[0] == '?':
             states.remove('?')
             states.append('?')
-        st.latex('''Q (states) =  \{ ''' + ', '.join(states).replace('?', 'Ø') + ''' \}''')
+        st.latex('''Q (states) =  \{ ''' + ', '.join(states) + ''' \}''')
         st.latex('''q_0 (initial \; state) =  \{ ''' + automata.get_initial_state().get_name() + ''' \}''')
     with col2:
         st.latex('''E (alphabets) =  \{ ''' + ', '.join(automata.get_alphabets()).replace('e', 'ε') + ''' \}''')
-        st.latex('''F (accepting \; states) =  \{ ''' + ', '.join([accept_state.get_name() for accept_state in automata.get_final_states()]).replace('?', 'Ø') + ''' \}''')
+        st.latex('''F (accepting \; states) =  \{ ''' + ', '.join([accept_state.get_name() for accept_state in automata.get_final_states()]) + ''' \}''')
 # Function to save data to session state
 def save_nfa_to_session(states, alphabets, start_state, accept_states, transitions_list):
     st.session_state.nfa_lines = [
@@ -176,7 +179,7 @@ def main():
                 st.pyplot(dfa_fig)
 
         with st.expander(" **Minimize DFA**"):
-            st.markdown('##### ' + '\n ##### '.join(dfa.minimize()).replace('?', 'Ø'))
+            st.markdown('##### ' + '\n ##### '.join(dfa.minimize()))
 
 if __name__ == "__main__":
     main()

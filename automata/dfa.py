@@ -8,8 +8,9 @@ class DFA(FiniteAutomata):
         super().__init__()
 
     def add_transition(self, from_state, alphabet, to_state):
-        self.alphabets.add(alphabet)
-        from_state.add_transition(Transition(alphabet, to_state))
+        if alphabet != self.EPSILON:
+            self.alphabets.add(alphabet)
+            from_state.add_transition(Transition(alphabet, to_state))
 
     @staticmethod
     def get_next_state_for_symbol(state, alphabet):
@@ -103,9 +104,10 @@ class DFA(FiniteAutomata):
         transitions = []
         for state in self.get_states():
             for alphabet in self.get_alphabets():
-                next_state = self.get_next_state_for_alphabet(state, alphabet)
-                if next_state is not None:
-                    transitions.append([state.get_name(), alphabet, next_state.get_name()])
+                if alphabet != self.EPSILON:
+                    next_state = self.get_next_state_for_alphabet(state, alphabet)
+                    if next_state is not None:
+                        transitions.append([state.get_name(), alphabet, next_state.get_name()])
         return transitions
 
     def __str__(self):
@@ -119,5 +121,5 @@ class DFA(FiniteAutomata):
         for state in self.states:
             if state.get_transitions():
                 sb.append(f"Transitions from {state}:\n")
-                sb.extend(f"  {transition}\n" for transition in state.get_transitions())
+                sb.extend(f"  {transition}\n" for transition in state.get_transitions() if transition.get_alphabet() != self.EPSILON)
         return "".join(sb)

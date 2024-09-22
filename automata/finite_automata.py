@@ -3,7 +3,7 @@ from .state import State
 
 class FiniteAutomata(ABC):
     def __init__(self):
-        self.states = set()
+        self.states = []
         self.alphabets = set()
         self.initial_state = None
         self.final_states = set()
@@ -18,22 +18,20 @@ class FiniteAutomata(ABC):
 
     def add_state(self, state) -> None:
         if not self.is_state_exist(state):
-            self.states.add(state)
-        else:
-            print(f"State {state.get_name()} already exists.")
+            self.states.append(state)
 
     def add_states(self, states_array) -> None:
         for state_name in states_array:
             if not self.is_state_exist(state_name):
-                self.states.add(State(state_name))
-            else:
-                print(f"State {state_name} already exists.")
+                self.states.append(State(state_name))
 
-    def get_states(self) -> set:
+
+    def get_states(self) -> list:
         return self.states
 
     def get_alphabets(self) -> set:
-        return self.alphabets
+        alphabets_list = list(self.alphabets)
+        return set(sorted(alphabets_list))
 
     def set_alphabets(self, alphabets) -> None:
         self.alphabets = alphabets

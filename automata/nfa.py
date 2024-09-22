@@ -29,9 +29,9 @@ class NFA(FiniteAutomata):
             if state.get_name() == name:
                 return state
 
-        # new_state = State(name)
-        # self.add_state(new_state)
-        # return new_state
+        new_state = State(name)
+        self.add_state(new_state)
+        return new_state
 
     def has_epsilon(self):
         return self.has_epsilon
