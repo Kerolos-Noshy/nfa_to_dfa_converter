@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 
-def create_graph(transitions, start_state, accept_states):
+def create_graph(transitions, start_state, accept_states:set):
     G = nx.DiGraph()
     # Add all transitions
     for transition in transitions:
@@ -10,10 +10,10 @@ def create_graph(transitions, start_state, accept_states):
         src = src.replace('?', 'Ø')
         dst = dst.replace('?', 'Ø')
         G.add_edge(src, dst, label=symbol)
-    for i in range(len(accept_states)):
-        if accept_states[i] == '?':
-            accept_states[i] = 'Ø'
-
+    for state in accept_states:
+        if state == '?':
+            accept_states.remove(state)
+            accept_states.add('Ø')
 
     # Prepare for drawing
     pos = nx.spring_layout(G)
