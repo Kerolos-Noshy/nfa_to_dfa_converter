@@ -147,7 +147,6 @@ def main():
                 st.table(create_transition_table(transitions_list))
                 nfa_accept_states = {state.get_name() for state in nfa.get_final_states()}
                 nfa_fig = create_graph(nfa.get_transitions(), nfa.get_initial_state().get_name(), nfa_accept_states)
-            st.pyplot(nfa_fig)
             # st.markdown(get_svg_as_base64(nfa_svg_content), unsafe_allow_html=True)
 
         with c2:
@@ -163,8 +162,19 @@ def main():
                 st.table(create_transition_table(transitions))
                 dfa_accept_states = {state.get_name() for state in dfa.get_final_states()}
                 dfa_fig = create_graph(dfa.get_transitions(), dfa.get_initial_state().get_name(), dfa_accept_states)
-            st.pyplot(dfa_fig)
+
             # st.markdown(get_svg_as_base64(dfa_svg_content), unsafe_allow_html=True)
+        with st.container():
+            st.info("""**Green color for the start state**
+            \n **Red color for the final states** """, icon='ℹ️')
+
+            co1, co2 = st.columns(2)
+            with co1:
+                st.pyplot(nfa_fig)
+
+            with co2:
+                st.pyplot(dfa_fig)
+
         with st.expander(" **Minimize DFA**"):
             st.markdown('##### ' + '\n ##### '.join(dfa.minimize()).replace('?', 'Ø'))
 

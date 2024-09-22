@@ -32,13 +32,13 @@ def create_graph(transitions, start_state, accept_states:set):
     # Highlight final states
     nx.draw_networkx_nodes(G, pos, nodelist=accept_states, node_color='lightpink', node_size=700)
 
-    # Add a dummy node for start state arrow
-    dummy_node = 'dummy'
-    G.add_node(dummy_node)
-    dummy_pos = pos[start_state] - np.array([0.1, 0])
-    pos[dummy_node] = dummy_pos
-    plt.annotate('', xy=pos[start_state], xytext=dummy_pos,
-                 arrowprops=dict(arrowstyle="->", color='green', lw=2))
+    # # Add a dummy node for start state arrow
+    # dummy_node = 'dummy'
+    # G.add_node(dummy_node)
+    # dummy_pos = pos[start_state] - np.array([0.1, 0])
+    # pos[dummy_node] = dummy_pos
+    # plt.annotate('', xy=pos[start_state], xytext=dummy_pos,
+    #              arrowprops=dict(arrowstyle="->", color='green', lw=2))
 
     # Draw edge labels
     edge_labels = nx.get_edge_attributes(G, 'label')
