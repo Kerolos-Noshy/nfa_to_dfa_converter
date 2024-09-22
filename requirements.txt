@@ -1,4 +1,5 @@
-pybase64
 pandas
 streamlit
-graphviz
+networkx
+matplotlib
+numpy
