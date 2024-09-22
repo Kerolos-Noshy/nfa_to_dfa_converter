@@ -1,15 +1,9 @@
 import pandas as pd
 import streamlit as st
 from graph_creator import create_graph
-import base64
 from automata.nfa import NFA
 from automata.automata_converter import AutomataConverter
 from automata.state import State
-
-def get_svg_as_base64(img_svg):
-    img_svg = img_svg.encode('utf-8') 
-    encoded = base64.b64encode(img_svg).decode('utf-8')
-    return f'<img src="data:image/svg+xml;base64,{encoded}">'
 
 
 def get_transitions_table(transitions):
@@ -18,6 +12,7 @@ def get_transitions_table(transitions):
     df.rename(columns={'index': 'State'}, inplace=True)
     df.fillna('', inplace=True)
     return df.rename({'e': "ε"}, axis=1)
+
 
 def create_transition_table(transitions):
     states = set()
@@ -94,7 +89,7 @@ def display_graph_info(graph_type, automata):
         st.latex('''Q (states) =  \{ ''' + ', '.join(states) + ''' \}''')
         st.latex('''q_0 (initial \; state) =  \{ ''' + automata.get_initial_state().get_name() + ''' \}''')
     with col2:
-        st.latex('''E (alphabets) =  \{ ''' + ', '.join(automata.get_alphabets()).replace('e', 'ε') + ''' \}''')
+        st.latex('''E (alphabets) =  \{ ''' + ', '.join(sorted(automata.get_alphabets())).replace('e', 'ε') + ''' \}''')
         st.latex('''F (accepting \; states) =  \{ ''' + ', '.join([accept_state.get_name() for accept_state in automata.get_final_states()]) + ''' \}''')
 # Function to save data to session state
 def save_nfa_to_session(states, alphabets, start_state, accept_states, transitions_list):
