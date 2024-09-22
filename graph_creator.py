@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import numpy as np
 
-def create_graph(transitions, start_state, accept_states:set):
+def create_graph(title,transitions, start_state, accept_states:set):
     G = nx.DiGraph()
     # Add all transitions
     for transition in transitions:
@@ -39,7 +39,7 @@ def create_graph(transitions, start_state, accept_states:set):
 
     # Remove the axis
     plt.axis('off')
-
+    plt.title(title)
     # Return the figure object
     return plt.gcf()
 
