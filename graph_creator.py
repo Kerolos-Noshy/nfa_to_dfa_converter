@@ -7,18 +7,11 @@ def create_graph(transitions, start_state, accept_states:set):
     # Add all transitions
     for transition in transitions:
         src, symbol, dst = transition
-        src = src.replace('?', 'Ø')
-        dst = dst.replace('?', 'Ø')
         G.add_edge(src, dst, label=symbol)
-    for state in accept_states:
-        if state == '?':
-            accept_states.remove(state)
-            accept_states.add('Ø')
 
     # Prepare for drawing
     pos = nx.spring_layout(G)
 
-    # Create a new figure
     plt.figure(figsize=(8, 6))
 
     # Draw the basic graph structure

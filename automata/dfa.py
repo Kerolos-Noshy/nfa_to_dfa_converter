@@ -6,6 +6,7 @@ from .state import State
 class DFA(FiniteAutomata):
     def __init__(self):
         super().__init__()
+        self.PHI = 'Ø'
 
     def add_transition(self, from_state, alphabet, to_state):
         if alphabet != self.EPSILON:
@@ -83,7 +84,7 @@ class DFA(FiniteAutomata):
         output = []
         previous_equivalence = [[], []]
         for state in self.get_states():
-            if state.get_name() != '?':
+            if state.get_name() != self.PHI:
                 if state not in self.get_final_states():
                     previous_equivalence[0].append(state)
                 else:
