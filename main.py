@@ -35,7 +35,7 @@ def create_transition_table(transitions):
     for from_state, symbol, to_state in transitions:
         transition_dict[str(from_state)][symbol].add(str(to_state))
 
-    df = pd.DataFrame(columns=symbols)
+    df = pd.DataFrame(columns=list(symbols))
 
     for state, symbol_dict in transition_dict.items():
         for symbol, to_states in symbol_dict.items():
