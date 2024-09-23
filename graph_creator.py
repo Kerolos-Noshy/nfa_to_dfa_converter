@@ -1,6 +1,5 @@
 import networkx as nx
 import matplotlib.pyplot as plt
-import numpy as np
 
 def create_graph(title,transitions, start_state, accept_states:set):
     G = nx.DiGraph()
@@ -23,7 +22,11 @@ def create_graph(title,transitions, start_state, accept_states:set):
     nx.draw_networkx_nodes(G, pos, nodelist=[start_state], node_color='lightgreen', node_size=700)
 
     # Highlight final states
-    nx.draw_networkx_nodes(G, pos, nodelist=accept_states, node_color='lightpink', node_size=700)
+    try:
+        nx.draw_networkx_nodes(G, pos, nodelist=accept_states, node_color='lightpink', node_size=700)
+    except nx.NetworkXException:
+        # Final state doesn't have any transitions
+        pass
 
     # # Add a dummy node for start state arrow
     # dummy_node = 'dummy'
