@@ -55,9 +55,10 @@ class DFA(FiniteAutomata):
     def states_in_same_group(self, states_groups, s1, s2):
         for group in states_groups:
             group_str = list(map(str, group))
-            if s1 in group_str and s2 in group_str:
+            if s1 in group_str:
+                if not s2 in group_str:
+                    return False
                 return True
-        return False
 
     def is_equivalent(self, previous_eq, state1, state2):
         for group in previous_eq:
@@ -107,7 +108,7 @@ class DFA(FiniteAutomata):
             equivalence_list.append(current_equivalence)
             previous_equivalence = current_equivalence
             current_equivalence = self.get_next_equivalence(previous_equivalence)
-
+        equivalence_list.append(current_equivalence)
         return equivalence_list
 
     def print_minimization(self):

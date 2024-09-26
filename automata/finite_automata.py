@@ -46,7 +46,7 @@ class FiniteAutomata(ABC):
         return self.final_states
 
     def add_final_state(self, final_state: State) -> None:
-        if final_state not in self.final_states:
+        if str(final_state) not in list(map(str, self.final_states)):
             self.final_states.add(final_state)
 
     def get_state_by_name(self, name: str) -> State:
