@@ -137,7 +137,7 @@ def convert_to_dfa(states, alphabets, start_state, accept_states, transitions_li
         with co2:
             st.pyplot(dfa_fig)
         st.markdown("Graphs are not clear? Click on `Convert to DFA` Again")
-
+    st.divider()
     with st.container(border=True):
         st.subheader('Minimized DFA')
         last_equivalence = dfa.minimize()[-1]
@@ -147,7 +147,7 @@ def convert_to_dfa(states, alphabets, start_state, accept_states, transitions_li
         minimized_transitions = minimized_dfa.get_transitions()
         col1, col2 = st.columns(2)
         with col1:
-            display_graph_info(nfa)
+            display_graph_info(minimized_dfa)
             st.latex('''\delta (transition \; table) ''')
             st.table(create_transition_table(minimized_transitions))
         with col2:
