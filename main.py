@@ -1,17 +1,7 @@
 import pandas as pd
 import streamlit as st
 from graph_creator import create_graph
-from automata.nfa import NFA
-from automata.automata_converter import AutomataConverter
-from automata.state import State
-
-
-def get_transitions_table(transitions):
-    df = pd.DataFrame(transitions).T
-    df.reset_index(inplace=True)
-    df.rename(columns={'index': 'State'}, inplace=True)
-    df.fillna('', inplace=True)
-    return df.rename({'e': "ε"}, axis=1)
+from automata import NFA, AutomataConverter, State
 
 
 def create_transition_table(transitions):
@@ -26,7 +16,7 @@ def create_transition_table(transitions):
         else:
             symbols.update(symbol)
 
-    symbols = list(symbols)[::-1]
+    symbols = sorted(symbols)
 
     state_list = sorted(map(str, states))
 
@@ -80,7 +70,7 @@ def display_transition_input(states, alphabets, num_transitions):
     return transitions_list
 
 
-def display_graph_info(graph_type, automata):
+def display_graph_info(automata):
     col1, col2 = st.columns(2)
     with col1:
         states = sorted([state.get_name() for state in automata.get_states()])
@@ -89,15 +79,6 @@ def display_graph_info(graph_type, automata):
     with col2:
         st.latex('''E (alphabets) =  \{ ''' + ', '.join(sorted(automata.get_alphabets())).replace('e', 'ε') + ''' \}''')
         st.latex('''F (accepting \; states) =  \{ ''' + ', '.join([accept_state.get_name() for accept_state in automata.get_final_states()]) + ''' \}''')
-
-
-def save_nfa_to_session(states, alphabets, start_state, accept_states, transitions_list):
-    st.session_state.nfa_lines = [
-        f"{','.join(states)}\n",
-        f"{','.join(alphabets)}\n",
-        f"{start_state}\n",
-        f"{','.join(accept_states)}\n"
-    ] + [f"{s1}, {a}, {s2}\n" for s1, a, s2 in transitions_list]
 
 
 def create_nfa(states, alphabets, start_state, accept_states, transitions_list):
@@ -117,12 +98,67 @@ def create_nfa(states, alphabets, start_state, accept_states, transitions_list):
     return nfa
 
 
+def convert_to_dfa(states, alphabets, start_state, accept_states, transitions_list):
+    nfa = create_nfa(states, alphabets, start_state, accept_states, transitions_list)
+
+    c1, c2 = st.columns(2)
+    with c1:
+        with st.container(border=True):
+            st.subheader('NFA')
+            display_graph_info(nfa)
+            st.latex('''\delta (transition \; table) ''')
+            st.table(create_transition_table(transitions_list))
+            nfa_fig = create_graph('NFA', nfa)
+        # st.markdown(get_svg_as_base64(nfa_svg_content), unsafe_allow_html=True)
+
+    with c2:
+        converter = AutomataConverter(nfa)
+        dfa = converter.convert_to_dfa()
+        with st.container(border=True):
+            st.subheader('DFA')
+            display_graph_info(dfa)
+            st.latex('''\delta (transition \; table) ''')
+
+            transitions = dfa.get_transitions()
+            st.table(create_transition_table(transitions))
+            dfa_fig = create_graph('DFA', dfa)
+
+        # st.markdown(get_svg_as_base64(dfa_svg_content), unsafe_allow_html=True)
+    with st.container():
+        st.info("""**Green color for the start state**
+                \n **Red color for the final states** """, icon='ℹ️')
+
+        co1, co2 = st.columns(2)
+        with co1:
+            st.pyplot(nfa_fig)
+
+        with co2:
+            st.pyplot(dfa_fig)
+        st.markdown("Graphs are not clear? Click on `Convert to DFA` Again")
+
+    with st.container(border=True):
+        st.subheader('Minimized DFA')
+        last_equivalence = dfa.minimize()[-1]
+        minimized_dfa = dfa.convert_minimization_to_DFA(last_equivalence)
+        minimized_dfa_fig = create_graph('Minimized DFA', minimized_dfa)
+
+        minimized_transitions = minimized_dfa.get_transitions()
+        col1, col2 = st.columns(2)
+        with col1:
+            display_graph_info(nfa)
+            st.latex('''\delta (transition \; table) ''')
+            st.table(create_transition_table(minimized_transitions))
+        with col2:
+            st.pyplot(minimized_dfa_fig)
+        st.markdown('##### ' + '\n ##### '.join(dfa.print_minimization()))
+
+
 def main():
     st.set_page_config(page_title="NFA to DFA Converter", layout="wide", initial_sidebar_state="auto")
     st.title("NFA to DFA Converter")
     st.header("Input your NFA details")
 
-    num_transitions = st.sidebar.number_input("Number of transitions", min_value=1, value=2)
+    num_transitions = st.sidebar.number_input("Number of transitions", min_value=1, value=3)
     states, alphabets = display_states_and_alphabets()
     st.markdown("##### Enter the start state:")
     start_state = st.selectbox("Enter the start state:", states, label_visibility='collapsed')
@@ -136,48 +172,8 @@ def main():
     st.divider()
 
     if st.button("Convert to DFA"):
+        convert_to_dfa(states, alphabets, start_state, accept_states, transitions_list)
 
-        nfa = create_nfa(states, alphabets, start_state, accept_states, transitions_list)
-
-        c1, c2 = st.columns(2)
-        with c1:
-            with st.container(border=True):
-                st.subheader('NFA')
-                display_graph_info('NFA', nfa)
-                st.latex('''\delta (transition \; table) ''')
-                st.table(create_transition_table(transitions_list))
-                nfa_accept_states = {state.get_name() for state in nfa.get_final_states()}
-                nfa_fig = create_graph('NFA', nfa.get_transitions(), nfa.get_initial_state().get_name(), nfa_accept_states)
-            # st.markdown(get_svg_as_base64(nfa_svg_content), unsafe_allow_html=True)
-
-        with c2:
-            converter = AutomataConverter(nfa, minimized=False)
-            dfa = converter.convert_to_dfa(minimized=False)
-            with st.container(border=True):
-
-                st.subheader('DFA')
-                display_graph_info('DFA', dfa)
-                st.latex('''\delta (transition \; table) ''')
-
-                transitions = dfa.get_transitions()
-                st.table(create_transition_table(transitions))
-                dfa_accept_states = {state.get_name() for state in dfa.get_final_states()}
-                dfa_fig = create_graph('DFA', dfa.get_transitions(), dfa.get_initial_state().get_name(), dfa_accept_states)
-
-            # st.markdown(get_svg_as_base64(dfa_svg_content), unsafe_allow_html=True)
-        with st.container():
-            st.info("""**Green color for the start state**
-            \n **Red color for the final states** """, icon='ℹ️')
-
-            co1, co2 = st.columns(2)
-            with co1:
-                st.pyplot(nfa_fig)
-
-            with co2:
-                st.pyplot(dfa_fig)
-
-        with st.expander(" **Minimize DFA**"):
-            st.markdown('##### ' + '\n ##### '.join(dfa.minimize()))
 
 if __name__ == "__main__":
     main()

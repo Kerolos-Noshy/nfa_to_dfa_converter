@@ -5,14 +5,14 @@ from .transition import Transition
 from .nfa import NFA
 from .dfa import DFA
 
+
 class AutomataConverter:
-    def __init__(self, nfa, minimized=False):
+    def __init__(self, nfa):
         self.nfa = nfa
         self.transition_table = []
         self.handled_states = set()
         self.unhandled_states = set()
         self.phi_state_exist = False
-        self.minimized = minimized
         self.PHI = 'Ø'
 
     # def convert_to_dfa(self):
@@ -26,12 +26,12 @@ class AutomataConverter:
     #
     #     return self.transition_table
 
-    def convert_to_dfa(self, minimized=False):
+    def convert_to_dfa(self):
         self.handled_states.clear()
         dfa = DFA()
         dfa.set_alphabets(self.nfa.get_alphabets())
         if (dfa.get_alphabets().__contains__('e')):
-            dfa.alphabets.remove('e');
+            dfa.alphabets.remove('e')
 
         phi = State(self.PHI)
         if self.nfa.has_epsilon:
@@ -162,9 +162,10 @@ class AutomataConverter:
 
                     for state in epsilon:
                         new_state = converted_nfa.get_state_by_name(state.name)
-                        converted_nfa.add_transition(current_state, symbol, new_state)
-                        if epsilon_nfa.get_state_type(state) == StateType.FINAL:
-                            converted_nfa.add_final_state(new_state)
+                        if symbol != 'e':
+                            converted_nfa.add_transition(current_state, symbol, new_state)
+                            if epsilon_nfa.get_state_type(state) == StateType.FINAL:
+                                converted_nfa.add_final_state(new_state)
 
         return converted_nfa
 

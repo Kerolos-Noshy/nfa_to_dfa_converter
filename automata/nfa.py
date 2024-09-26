@@ -3,6 +3,7 @@ from .finite_automata import FiniteAutomata
 from .state_type import StateType
 from .transition import Transition
 
+
 class NFA(FiniteAutomata):
     def __init__(self):
         super().__init__()
@@ -56,15 +57,4 @@ class NFA(FiniteAutomata):
         return transitions
 
     def __str__(self):
-        sb = [
-            "NFA:\n",
-            f"States: {[state.get_name() for state in self.states]}\n",
-            f"Alphabet: {self.alphabets}\n",
-            f"Initial State: {self.initial_state}\n",
-            f"Accepting States: {[state.get_name() for state in self.final_states]}\n",
-        ]
-        for state in self.states:
-            if state.get_transitions():
-                sb.append(f"Transitions from {state}:\n")
-                sb.extend(f"  {transition}\n" for transition in state.get_transitions())
-        return "".join(sb)
+        return "NFA:\n" + super().__str__()
