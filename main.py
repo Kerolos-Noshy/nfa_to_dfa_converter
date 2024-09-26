@@ -1,7 +1,9 @@
 import pandas as pd
 import streamlit as st
 from graph_creator import create_graph
-from automata import NFA, AutomataConverter, State
+from automata.nfa import NFA
+from automata.automata_converter import AutomataConverter
+from automata.state import State
 
 
 def create_transition_table(transitions):

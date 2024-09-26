@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib.pyplot as plt
 from collections import defaultdict
-from automata import FiniteAutomata
+from automata.finite_automata import FiniteAutomata
 
 
 def create_graph(title, automata: FiniteAutomata):
